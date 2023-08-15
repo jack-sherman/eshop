@@ -32,7 +32,8 @@
     "install-client": "yarn install",
     "build-client": "yarn run build",
     "start-client": "yarn start",
-    "start": "react-scripts start"
+    "start": "react-scripts start",
+    "build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
