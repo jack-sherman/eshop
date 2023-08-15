@@ -28,7 +28,7 @@
   },
   "scripts": {
     "install-server": "cd server && yarn install",
-    "start-server": "cd server && nodemon index.js",
+    "start-server": "cd server && node index.js",
     "install-client": "yarn install",
     "build-client": "yarn build",
     "start-client": "yarn start"
