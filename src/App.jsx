@@ -3,7 +3,6 @@ import Home from "./pages/Home";
 import ProductList from "./pages/ProductList";
 import {
   BrowserRouter as Router,
-  Switch,
   Route,
   Routes,
   Navigate,

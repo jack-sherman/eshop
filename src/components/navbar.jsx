@@ -1,10 +1,10 @@
-import { Badge, Menu } from "@material-ui/core";
-import { Search, ShoppingCartOutlined } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
+import { Badge } from "@material-ui/core";
+import { ShoppingCartOutlined } from "@material-ui/icons";
+import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { mobile } from "../responsive";
-import { UseSelector, useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../redux/userRedux";
 
 const Container = styled.div`

@@ -27,10 +27,11 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "install-server": "cd server && yarn install",
+    "start-server": "cd server && nodemon index.js",
+    "install-client": "yarn install",
+    "build-client": "yarn build",
+    "start-client": "yarn start"
   },
   "eslintConfig": {
     "extends": [
