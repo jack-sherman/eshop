@@ -31,7 +31,8 @@
     "start-server": "cd server && node index.js",
     "install-client": "yarn install",
     "build-client": "yarn run build",
-    "start-client": "yarn start"
+    "start-client": "yarn start",
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
