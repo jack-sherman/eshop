@@ -1,198 +1,196 @@
-import { Add, Remove } from "@material-ui/icons"
-import styled from "styled-components"
-import Announcement from "../components/Announcement"
-import Footer from "../components/Footer"
-import Navbar from "../components/navbar"
-import Newsletter from "../components/Newsletter"
-import {useState, useEffect} from "react"
-import {useParams} from "react-router-dom"
-import { popularProducts } from "../data"
+import { Add, Remove } from "@material-ui/icons";
+import styled from "styled-components";
+import Announcement from "../components/Announcement";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import Newsletter from "../components/Newsletter";
+import { mobile } from "../responsive";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { publicRequest } from "../requestMethods";
+import { addProduct } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
-
-const Container = styled.div``
+const Container = styled.div``;
 const Wrapper = styled.div`
-    padding: 50px;
-    display: flex;
-
-`
+  padding: 50px;
+  display: flex;
+  ${mobile({ flexDirection: "column", padding: "10px" })}
+`;
 const ImgContainer = styled.div`
-    flex: 1;
-    display: flex;
-    align-items: start;
-`
+  flex: 1;
+  display: flex;
+  align-items: start;
+`;
 const Image = styled.img`
-    width: 100%;
-    height: 90vh;
-    object-fit: contain;
-    object-position: top left;
-`
+  width: 100%;
+  height: 90vh;
+  object-fit: contain;
+  object-position: top left;
+  ${mobile({ height: "40vh" })}
+`;
 const InfoContainer = styled.div`
-    flex: 1;
-    padding: 0 50px;
-`
+  flex: 1;
+  padding: 0 50px;
+  ${mobile({ padding: "10px" })}
+`;
 const Title = styled.h1`
-    font-weight: 200;
-`
+  font-weight: 200;
+`;
 const Desc = styled.p`
-    margin: 20px 0;
-`
+  margin: 20px 0;
+`;
 const Price = styled.span`
-    font-weight: 100;
-    font-size: 40px;
-`
+  font-weight: 100;
+  font-size: 40px;
+`;
 const FilterContainer = styled.div`
-    width: 50%;
-    margin: 30px 0px;
-    display: flex;
-    justify-content: space-between;
+  width: 50%;
+  margin: 30px 0px;
+  display: flex;
+  justify-content: space-between;
+  ${mobile({ width: "100%" })}
 `;
 
 const Filter = styled.div`
-    display: flex;
-    align-items: center;
-
+  display: flex;
+  align-items: center;
 `;
 
 const FilterTitle = styled.span`
-    font-size: 20px;
-    font-weight: 200;
+  font-size: 20px;
+  font-weight: 200;
 `;
 
 const FilterColor = styled.div`
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: ${props=>props.color};
-    margin: 0px 5px;
-    cursor: pointer;
-
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid black;
+  background-color: ${(props) => props.color};
+  margin: 0px 5px;
+  cursor: pointer;
 `;
 
 const FilterSize = styled.select`
-    margin-left: 10px;
-    padding: 5px;
+  margin-left: 10px;
+  padding: 5px;
 `;
 
 const FilterSizeOption = styled.option``;
 
 const AddContainer = styled.div`
-    display: flex;
-    width: 50%;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: space-between;
+  ${mobile({ width: "100%" })}
 `;
 const AmountContainer = styled.div`
-    display: flex;
-    align-items: center;
-    font-weight: 700;
+  display: flex;
+  align-items: center;
+  font-weight: 700;
 `;
 const Amount = styled.span`
-    width: 30px;
-    height: 30px;
-    border-radius: 10px;
-    border: 1px solid teal;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0px 5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid teal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 5px;
 `;
 const Button = styled.button`
-    padding: 15px;
-    border: 2px solid teal;
-    background-color: white;
-    cursor: pointer;
-    font-weight: 500;
-    &:hover{
-        background-color: #f8f4f4;
-    };
-
+  padding: 15px;
+  border: 2px solid teal;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 500;
+  &:hover {
+    background-color: #f8f4f4;
+  }
 `;
 
-
-
-
 const Product = () => {
-    const [count, setCount] = useState(0);
-    const [size, setSize] = useState("M")
-    const [cart, setCart] = useState(JSON.parse(localStorage.getItem("cart")));
+  const location = useLocation();
+  const id = location.pathname.split("/")[2];
+  const [product, setProduct] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const dispatch = useDispatch();
 
-
-    useEffect(() => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-        console.log(localStorage["cart"])
-        console.log(cart)
-    },[cart])
-
-    const addToCart = (product) => {
-        product["quantity"] = count;
-        product["size"] = size;
-        if(count > 0){
-            setCart([...cart, product]);
-        }
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await publicRequest.get("/products/find/" + id);
+        console.log(res.data);
+        setProduct(res.data);
+        setColor(res.data.color[0]);
+        setSize(res.data.size[0]);
+      } catch {}
     };
+    getProduct();
+  }, [id]);
 
-    const changeSize = (e) => {
-        setSize(e.target.value)
+  const handleQuantity = (type) => {
+    if (type === "dec") {
+      quantity > 1 && setQuantity(quantity - 1);
+    } else {
+      setQuantity(quantity + 1);
     }
+  };
 
-    const handleCount = (curr) => {
-        if(curr < 0){
-            if(count==0 && curr < 0){
-                setCount(currentCount => currentCount);
-            }else{
-                setCount(currentCount => currentCount - 1)
-            }
-        }else{
-            setCount(currentCount => currentCount + 1 )
-        }
-    }
-    let { id } = useParams()
+  const handleClick = () => {
+    dispatch(addProduct({ ...product, quantity, color, size }));
+  };
   return (
     <Container>
-        <Navbar/>
-        <div></div>
-        <Wrapper>
-            <ImgContainer>
-                <Image src={popularProducts[id].img}/>
-            </ImgContainer>
-            <InfoContainer>
-                <Title>{popularProducts[id].name}</Title>
-                <Desc>{popularProducts[id].desc}</Desc>
-                <Price>$ {popularProducts[id].price}</Price>
-                <FilterContainer>
-                    <Filter>
-                        <FilterTitle>Color</FilterTitle>
-                        <FilterColor color="black"/>
-                        <FilterColor color="darkblue"/>
-                        <FilterColor color="gray"/>
-                    </Filter>
-                    <Filter>
-                        <FilterTitle>Size</FilterTitle>
-                        <FilterSize value={size} onChange={changeSize}>
-                            <FilterSizeOption value="XS">XS</FilterSizeOption>
-                            <FilterSizeOption value="S">S</FilterSizeOption>
-                            <FilterSizeOption value="M">M</FilterSizeOption>
-                            <FilterSizeOption value="L">L</FilterSizeOption>
-                            <FilterSizeOption value="XL">XL</FilterSizeOption>
-                        </FilterSize>
-                    </Filter>
-                </FilterContainer>
-
-                <AddContainer>
-                    <AmountContainer>
-                        <Remove cursor="pointer" onClick={() => handleCount(-1)}/>
-                        <Amount>{count}</Amount>
-                        <Add cursor="pointer" onClick={() => handleCount(1)}/>
-                    </AmountContainer>
-                    <Button onClick={e => addToCart(popularProducts[id])}>ADD TO CART</Button>
-                </AddContainer>
-            </InfoContainer>
-        </Wrapper>
-
-        <Newsletter/>
-        <Footer/>
+      <Navbar />
+      <Wrapper>
+        <ImgContainer>
+          <Image src={product.img} />
+        </ImgContainer>
+        <InfoContainer>
+          <Title>{product.title}</Title>
+          <Desc>{product.desc}</Desc>
+          <Price>$ {product.price}</Price>
+          <FilterContainer>
+            <Filter>
+              <FilterTitle>Color</FilterTitle>
+              {product.color?.map((c) => (
+                <FilterColor
+                  color={c}
+                  key={c}
+                  onClick={() => setColor(c)}
+                  radius={c}
+                />
+              ))}
+            </Filter>
+            <Filter>
+              <FilterTitle>Size</FilterTitle>
+              <FilterSize onChange={(e) => setSize(e.target.value)}>
+                {product.size?.map((s) => (
+                  <FilterSizeOption key={s}>{s} </FilterSizeOption>
+                ))}
+              </FilterSize>
+            </Filter>
+          </FilterContainer>
+          <AddContainer>
+            <AmountContainer>
+              <Remove onClick={() => handleQuantity("dec")} cursor="pointer" />
+              <Amount>{quantity}</Amount>
+              <Add onClick={() => handleQuantity("inc")} cursor="pointer" />
+            </AmountContainer>
+            <Button onClick={handleClick}>ADD TO CART</Button>
+          </AddContainer>
+        </InfoContainer>
+      </Wrapper>
+      <Newsletter />
+      <Footer />
     </Container>
-  )
-}
+  );
+};
 
-export default Product
+export default Product;
