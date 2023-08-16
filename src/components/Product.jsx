@@ -54,6 +54,7 @@ const Icon = styled.div`
   height: 40px;
   border-radius: 50%;
   background-color: white;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
